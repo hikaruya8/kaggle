@@ -1,7 +1,10 @@
 Taitanic_ML_kaggle
 ==============================
 
-Machine Learning Project of Taitanic Disaster using Dataset of kaggle
+Machine Learning Project of Taitanic Disaster using Dataset of kaggle.
+
+You can recognize that this has correlation.
+<img width="378" alt="2018-03-21 16 51 42" src="https://user-images.githubusercontent.com/25264827/37698950-951ad66c-2d28-11e8-95db-373738272c71.png">
 
 Project Organization
 ------------
