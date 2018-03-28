@@ -2,9 +2,8 @@ Taitanic_ML_kaggle
 ==============================
 
 Machine Learning Project of Titanic Disaster using Dataset of kaggle.
-(taitanic = mistake spell)
 
-You can recognize that this has correlation by the image below.
+This has correlation by the image below.
 <br></br>
 <img width="378" alt="2018-03-21 16 51 42" src="https://user-images.githubusercontent.com/25264827/37698950-951ad66c-2d28-11e8-95db-373738272c71.png">
 
