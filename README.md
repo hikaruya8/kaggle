@@ -3,6 +3,11 @@ Taitanic_ML_kaggle
 
 Machine Learning Project of Titanic Disaster using Dataset of kaggle.
 
+Using RandomForestClassifier, got score '0.79904'.
+
+Though I used Cookie Cutter, could not get whete files are put on.
+so, those are complicated. I will fix it.
+
 This has correlation by the image below.
 <br></br>
 <img width="378" alt="2018-03-21 16 51 42" src="https://user-images.githubusercontent.com/25264827/37698950-951ad66c-2d28-11e8-95db-373738272c71.png">
