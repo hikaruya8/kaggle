@@ -1,6 +1,7 @@
 import torchtext
 import string
 import re
+import random
 
 def preprocessing_text(text):
     for p in string.punctuation:
@@ -40,8 +41,14 @@ train_val_ds, test_ds = torchtext.data.TabularDataset.splits(
     test='test.csv', format='csv',
     fields=[('ID', ID), ('Text1', TEXT1), ('Text2', TEXT2), ('Label', LABEL)])
 
-# test dataloader
-print('訓練 検証のデータ数: {}'.format(len(train_val_ds)))
-print('１つ目の訓練&検証データ:{}'.format(vars(train_val_ds[27476])))
+# # test dataloader
+# print('訓練 検証のデータ数: {}'.format(len(train_val_ds)))
+# print('１つ目の訓練&検証データ:{}'.format(vars(train_val_ds[27476])))
+
+train_ds, val_ds = train_val_ds.split(split_ratio=0.8, random_state=random.seed(1234))
+# # test split data
+# print(len(train_ds))
+# print(len(val_ds))
+# print(vars(train_ds[0]))
 
 
