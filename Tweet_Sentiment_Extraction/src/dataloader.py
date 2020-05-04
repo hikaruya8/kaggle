@@ -1,22 +1,39 @@
-import csv
-import pandas as pd
-import numpy as np
+import torchtext
+import string
+import re
 
-sample_submission_data_path = '../data/sample_submission.csv'
-train_data_path = '../data/train.csv'
-test_data_path = '../data/test.csv'
+def preprocessing_text(text):
+    for p in string.punctuation:
+        if (p == ".") or (p == ","):
+            continue
+        else:
+            text = text.replace(p, " ")
 
-def load_data():
-    with open(sample_submission_data_path, 'r') as f:
-        reader = csv.reader(f)
-        sample_submission_data = [row for row in reader]
+        text = text.replace(".", " . ")
+        text = text.replace(",", " , ")
 
-    sample_submission_df = pd.read_csv(sample_submission_data_path)
-    train_data_df = pd.read_csv(train_data_path)
-    test_data_df = pd.read_csv(test_data_path)
+        return text
 
-    return sample_submission_data, sample_submission_df, train_data_df, test_data_df
+# 分かち書き
+def tokenizer_punctuation(text):
+    return text.strip().split()
 
-if __name__ == '__main__':
-    sample_submission_data_path, sample_submission_df, train_data_df, test_data_df = load_data()
-    print(train_data_df)
+# 前処理と分かち書きをまとめる
+def tokenizer_with_preprocessing(text):
+    text = preprocessing_text(text)
+    ret = tokenizer_punctuation(text)
+    return ret
+
+# test tokenizer with preprocessing
+# print(tokenizer_with_preprocessing('I like dogs.'))
+
+
+
+# max_length = 256
+# TEXT = torchtext.data.Field(sequential=True, tokenize=Tokenizer_with_preprocessing, use_vocab=True, lower=True, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>")
+# LABEL = torchtext.data.Field(sequential=False, use_vocab=False)
+
+# train_val_ds, test_ds = torchtext.data.TabularDataset
+
+# def
+# if __name__ == '__main__':
