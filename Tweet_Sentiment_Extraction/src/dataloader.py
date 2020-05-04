@@ -28,12 +28,20 @@ def tokenizer_with_preprocessing(text):
 # print(tokenizer_with_preprocessing('I like dogs.'))
 
 
+#  データを読み込む際の読み込んだ内容に対して行う処理を定義
+max_length = 256
+ID = torchtext.data.Field(sequential=False, use_vocab=False)
+TEXT1 = torchtext.data.Field(sequential=True, tokenize=tokenizer_with_preprocessing, use_vocab=True, lower=True, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>") # raw text
+TEXT2 = torchtext.data.Field(sequential=True, tokenize=tokenizer_with_preprocessing, use_vocab=True, lower=True, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>") # selected_text
+LABEL = torchtext.data.Field(sequential=False, use_vocab=False, preprocessing=lambda l: 0 if l == 'neutral' else 1 if l == 'positive' else 2, is_target=True) # sentiment label
 
-# max_length = 256
-# TEXT = torchtext.data.Field(sequential=True, tokenize=Tokenizer_with_preprocessing, use_vocab=True, lower=True, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>")
-# LABEL = torchtext.data.Field(sequential=False, use_vocab=False)
+train_val_ds, test_ds = torchtext.data.TabularDataset.splits(
+    path='../data/', train='train.csv',
+    test='test.csv', format='csv',
+    fields=[('ID', ID), ('Text1', TEXT1), ('Text2', TEXT2), ('Label', LABEL)])
 
-# train_val_ds, test_ds = torchtext.data.TabularDataset
+# test dataloader
+print('訓練 検証のデータ数: {}'.format(len(train_val_ds)))
+print('１つ目の訓練&検証データ:{}'.format(vars(train_val_ds[27476])))
 
-# def
-# if __name__ == '__main__':
+
