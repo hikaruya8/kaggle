@@ -13,6 +13,7 @@ class Embedder(nn.Module):
         x_vec = self.embeddings(x)
         return x_vec
 
+'''
 # test
 # prepare minibatch
 batch = next(iter(train_dl))
@@ -24,4 +25,6 @@ x = batch.Text1[0]
 x1 = net1(x) # words to vectors
 print("input tensor size:{}".format(x.shape))
 print("output tensor size:{}".format(x1.shape))
+'''
+
 
