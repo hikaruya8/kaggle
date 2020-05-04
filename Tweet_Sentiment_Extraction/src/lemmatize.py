@@ -1,7 +1,6 @@
 import nltk
 from nltk import stem
 from nltk.stem import WordNetLemmatizer
-from dataloader import load_data
 
 nltk.download('wordnet')
 
