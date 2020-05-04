@@ -40,11 +40,12 @@ LABEL = torchtext.data.Field(sequential=False, use_vocab=False, preprocessing=la
 train_val_ds, test_ds = torchtext.data.TabularDataset.splits(
     path='../data/', train='train.csv',
     test='test.csv', format='csv',
-    fields=[('ID', ID), ('Text1', TEXT1), ('Text2', TEXT2), ('Label', LABEL)])
+    fields=[('ID', None), ('Text1', TEXT1), ('Text2', TEXT2), ('Label', LABEL)],
+    skip_header=True)
 
-# # test dataloader
-# print('訓練 検証のデータ数: {}'.format(len(train_val_ds)))
-# print('１つ目の訓練&検証データ:{}'.format(vars(train_val_ds[27476])))
+# test dataloader
+print('訓練 検証のデータ数: {}'.format(len(train_val_ds)))
+print('１つ目の訓練&検証データ:{}'.format(vars(train_val_ds[0])))
 
 train_ds, val_ds = train_val_ds.split(split_ratio=0.8, random_state=random.seed(1234))
 # # test split data
@@ -55,13 +56,26 @@ train_ds, val_ds = train_val_ds.split(split_ratio=0.8, random_state=random.seed(
 # make vocab
 fasttext_vectors = Vectors(name='../data/wiki-news-300d-1M.vec')
 # test vectors
-print(fasttext_vectors.dim)
-print(len(fasttext_vectors.itos))
+# print(fasttext_vectors.dim)
+# print(len(fasttext_vectors.itos))
 
 #  ベクトル化したボキャブラリーを作成
 TEXT1.build_vocab(train_ds, vectors=fasttext_vectors, min_freq=10)
 TEXT2.build_vocab(train_ds, vectors=fasttext_vectors, min_freq=10)
 # ボキャブラリのベクトル確認
-print(TEXT1.vocab.vectors.shape)
-print(TEXT1.vocab.vectors)
-print(TEXT1.vocab.stoi)
+# print(TEXT1.vocab.vectors.shape)
+# print(TEXT1.vocab.vectors)
+# print(TEXT1.vocab.stoi)
+
+
+# make Dataloader
+train_dl = torchtext.data.Iterator(train_ds, batch_size=24, train=True)
+val_dl = torchtext.data.Iterator(val_ds, batch_size=24, train=False, sort=False)
+test_dl = torchtext.data.Iterator(test_ds, batch_size=24, sort=False)
+
+# test
+batch = next(iter(val_dl))
+# print(batch.ID)
+print(batch.Text1)
+print(batch.Text2)
+print(batch.Label)
