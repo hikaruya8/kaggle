@@ -10,7 +10,7 @@ def get_jaccard_sim(str1, str2):
     str2_set = set(str2.split())
     lemmatized_str1 = lemmatize_set(str1_set)
     lemmatized_str2 = lemmatize_set(str2_set)
-    import pdb;pdb.set_trace()
+    # import pdb;pdb.set_trace()
     co_occurrence = lemmatized_str1.intersection(lemmatized_str2)
     return float(len(co_occurrence)) / (len(lemmatized_str1) + len(lemmatized_str2) - len(co_occurrence))
 
