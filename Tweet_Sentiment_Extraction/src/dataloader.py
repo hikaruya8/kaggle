@@ -2,6 +2,7 @@ import torchtext
 import string
 import re
 import random
+from torchtext.vocab import Vectors
 
 def preprocessing_text(text):
     for p in string.punctuation:
@@ -51,4 +52,16 @@ train_ds, val_ds = train_val_ds.split(split_ratio=0.8, random_state=random.seed(
 # print(len(val_ds))
 # print(vars(train_ds[0]))
 
+# make vocab
+fasttext_vectors = Vectors(name='../data/wiki-news-300d-1M.vec')
+# test vectors
+print(fasttext_vectors.dim)
+print(len(fasttext_vectors.itos))
 
+#  ベクトル化したボキャブラリーを作成
+TEXT1.build_vocab(train_ds, vectors=fasttext_vectors, min_freq=10)
+TEXT2.build_vocab(train_ds, vectors=fasttext_vectors, min_freq=10)
+# ボキャブラリのベクトル確認
+print(TEXT1.vocab.vectors.shape)
+print(TEXT1.vocab.vectors)
+print(TEXT1.vocab.stoi)
