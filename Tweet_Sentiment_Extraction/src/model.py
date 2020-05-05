@@ -200,6 +200,44 @@ class ClassificationHead(nn.Module):
 
         return out
 
+class TransformerClassification(nn.Module):
+    def __init__(self, text_embedding_vectors, d_model=300, max_seq_len=256, output_dim=3):
+        super().__init__()
+
+        # make model
+        self.net1 = Embedder(text_embedding_vectors)
+        self.net2 = PositionalEncoder(d_model=d_model, max_seq_len=max_seq_len)
+        self.net3_1 = TransformerBlock(d_model=d_model)
+        self.net3_2 = TransformerBlock(d_model=d_model)
+        self.net4 = ClassificationHead(d_model=d_model, output_dim=output_dim)
+
+    def forward(self, x, mask):
+        x1 = self.net1(x)
+        x2 = self.net2(x1)
+        x3_1, normalized_weights_1 = self.net3_1(x2, mask)
+        x3_2, normalized_weights_2 = self.net3_2(x3_1, mask)
+        x4 = self.net4(x3_2)
+        return x4, normalized_weights_1, normalized_weights_2
+
+
+# Transformerの動作test
+if __name__ == '__main__':
+    batch = next(iter(train_dl)) # バッチ用意
+    net = TransformerClassification(text_embedding_vectors=TEXT1.vocab.vectors, d_model=300, max_seq_len=256, output_dim=3)
+
+    x = batch.Text1[0]
+    input_pad=1
+    input_mask = (x != input_pad)
+    out, normalized_weights_1, normalized_weights_2 = net(x, input_mask)
+
+    print("出力のテンソルサイズ:{}".format(out.shape))
+    print("出力テンソルのsigmoid:{}".format(F.softmax(out, dim=1)))
+
+
+
+
+
+
 
 
 
