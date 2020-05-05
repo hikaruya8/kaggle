@@ -158,7 +158,8 @@ class TransformerBlock(nn.Module):
 
         return output, normalized_weights
 
-'''test'''
+'''
+# test
 # model 定義
 net1 = Embedder(TEXT1.vocab.vectors)
 net2 = PositionalEncoder(d_model=300, max_seq_len=256)
@@ -179,6 +180,26 @@ x3, normalized_weights = net3(x2, input_mask) # self-attentionで特徴量変換
 print('入力テンソルサイズ:{}:'.format(x2.shape))
 print('出力テンソルサイズ:{}:'.format(x3.shape))
 print('Attentionのサイズ:{}'.format(normalized_weights.shape))
+'''
+
+class ClassificationHead(nn.Module):
+    # TransformerBlockの出力を使用して最後にクラス分類する
+    def __init__(self, d_model=300, output_dim=3): #outputは0, 1, 2 (neutral, positive, negarive)の3つ
+        super().__init__()
+
+        # 全結合層
+        self.linear = nn.Linear(d_model, output_dim)
+
+        # 重み初期帰化
+        nn.init.normal_(self.linear.weight, std=0.02)
+        nn.init.normal_(self.linear.bias, 0)
+
+    def forward(self, x):
+        x0 = x[:, 0, :] #各ミニバッチの各文の先頭の単語の特徴量(300dim)を取り出す
+        out = self.linear(x0)
+
+        return out
+
 
 
 
