@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from dataloader import get_tweets_and_sentiment_label_loaders
 
-train_dl, val_dl, test_dl, TEXT1, TEXT2 = get_tweets_and_sentiment_label_loaders()
+train_dl, val_dl, test_dl, TEXT1, TEXT2, TEXT_TEXT = get_tweets_and_sentiment_label_loaders()
 
 class Embedder(nn.Module):
     # idで示される単語をベクトルへ変換
