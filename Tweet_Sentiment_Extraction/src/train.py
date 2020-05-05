@@ -81,7 +81,20 @@ def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
 
             print('Epoch {}/{} | {:^5} | Loss:{:.4f} Acc: {:.4f}'.format(epoch+1, num_epochs, phase, epoch_loss, epoch_acc))
 
+            # save_model(epoch, net, optimizer, loss, save_model_path)
+
     return net
+
+
+def save_model(epoch, model, optimizer, loss, save_model_path):
+    # モデルをチェックポイントごとに保存
+    torch.save({
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'loss': loss
+        }, save_model_path)
+
 
 def train(save_model_path):
     # データの読み込み
@@ -110,12 +123,13 @@ def train(save_model_path):
     # train, validationを実施
     net_trained = train_model(net, dataloaders_dict, criterion, optimizer, num_epochs=args.num_epochs)
 
-    # モデルを保存
+    # # モデルを保存
     torch.save(net_trained.state_dict(), save_model_path)
 
 def eval(saved_model_path):
     # データの読み込み
     train_dl, val_dl, test_dl, TEXT1, TEXT2, TEST_TEXT = get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64)
+    # load model
     net_trained = TransformerClassification(text_embedding_vectors=TEXT1.vocab.vectors, d_model=300, max_seq_len=256, output_dim=3)
     net_trained.load_state_dict(torch.load(saved_model_path))
     # eval mode

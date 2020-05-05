@@ -53,6 +53,8 @@ def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
     # test dataloader
     # print('訓練 検証のデータ数: {}'.format(len(train_val_ds)))
     # print('１つ目の訓練&検証データ:{}'.format(vars(train_val_ds[0])))
+    # print('テストのデータ数: {}'.format(len(test_ds)))
+    # print('１つ目のテストデータ:{}'.format(vars(test_ds[0])))
 
     train_ds, val_ds = train_val_ds.split(split_ratio=0.8, random_state=random.seed(1234))
     # # test split data
@@ -69,11 +71,14 @@ def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
     #  ベクトル化したボキャブラリーを作成
     TEXT1.build_vocab(train_ds, vectors=fasttext_vectors, min_freq=10)
     TEXT2.build_vocab(train_ds, vectors=fasttext_vectors, min_freq=10)
-    TEST_TEXT.build_vocab(train_ds, vectors=fasttext_vectors, min_freq=10)
-    # ボキャブラリのベクトル確認
+    TEST_TEXT.build_vocab(test_ds, vectors=fasttext_vectors, min_freq=10)
+    # # ボキャブラリのベクトル確認
     # print(TEXT1.vocab.vectors.shape)
     # print(TEXT1.vocab.vectors)
     # print(TEXT1.vocab.stoi)
+    # print(TEST_TEXT.vocab.vectors.shape)
+    # print(TEST_TEXT.vocab.vectors)
+    # print(TEST_TEXT.vocab.stoi)
 
 
     # make Dataloader
