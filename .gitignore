@@ -1,4 +1,5 @@
 /Tweet_Sentiment_Extraction/data/
 /Tweet_Sentiment_Extraction/src/.vector_cache/
 /Tweet_Sentiment_Extraction/src/__pycache__/
+/Tweet_Sentiment_Extraction/model/
 /sample_jupyter/
