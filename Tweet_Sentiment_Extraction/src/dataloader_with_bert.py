@@ -44,13 +44,15 @@ def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
     #  データを読み込む際の読み込んだ内容に対して行う処理を定義
     max_length = max_length
     batch_size = batch_size
+    pad_index = bert_tokenizer.convert_tokens_to_ids(bert_tokenizer.pad_token)
     ID = torchtext.data.Field(sequential=False, use_vocab=False)
-    TEXT1 = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=False, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>", pad_token="<pad>", unk_token="<unk>") # raw text
-    TEXT2 = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=False, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>",pad_token="<pad>", unk_token="<unk>") # selected_text
+    TEXT1 = torchtext.data.Field(use_vocab=False, tokenize=bert_tokenizer.encode, pad_token=pad_index) # raw text
+    TEXT2 = torchtext.data.Field(use_vocab=False, tokenize=bert_tokenizer.encode, pad_token=pad_index) # selected_text
     LABEL = torchtext.data.Field(sequential=False, use_vocab=False, preprocessing=lambda l: 0 if l == 'neutral' else 1 if l == 'positive' else 2, is_target=True) # sentiment label
-    TEST_TEXT = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=False, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>",pad_token="<pad>", unk_token="<unk>") # raw_text
+    TEST_TEXT = torchtext.data.Field(use_vocab=False, tokenize=bert_tokenizer.encode, pad_token=pad_index) # raw_text
     TEST_LABEL = torchtext.data.Field(sequential=False, use_vocab=False, preprocessing=lambda l: 0 if l == 'neutral' else 1 if l == 'positive' else 2, is_target=True) # sentiment label
 
+  # TEST_TEXT = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=False, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>",pad_token=pad_index, unk_token="<unk>")
     train_val_ds = torchtext.data.TabularDataset(
         path='../data/train.csv', format='csv',
         fields=[('ID', None), ('Text1', TEXT1), ('Text2', TEXT2), ('Label', LABEL)],
@@ -79,9 +81,9 @@ def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
     # print(len(fasttext_vectors.itos))
     # pdb.set_trace()
     #  ベクトル化したボキャブラリーを作成
-    # TEXT1.build_vocab(train_ds, vectors=fasttext_vectors, min_freq=10)
-    # TEXT2.build_vocab(train_ds, vectors=fasttext_vectors, min_freq=10)
-    # TEST_TEXT.build_vocab(test_ds, vectors=fasttext_vectors, min_freq=10)
+    # TEXT1.build_vocab(train_ds, min_freq=1)
+    # TEXT2.build_vocab(train_ds, min_freq=1)
+    # TEST_TEXT.build_vocab(test_ds, min_freq=1)
     # # ボキャブラリのベクトル確認
     # print(TEXT1.shape)
     # print(TEXT1.vectors)
@@ -96,6 +98,9 @@ def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
     val_dl = torchtext.data.Iterator(val_ds, batch_size=24, train=False, sort=False)
     test_dl = torchtext.data.Iterator(test_ds, batch_size=24, train=False, sort=False)
 
+    # 辞書オブジェクトにまとめる
+    dataloaders_dict = {"train": train_dl, "val": val_dl}
+
     # pdb.set_trace()
     # # test
     # batch = next(iter(train_dl))
@@ -103,7 +108,7 @@ def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
     # print(batch.Text2)
     # print(batch.Label)
 
-    return train_dl, val_dl, test_dl, TEXT1, TEXT2, TEST_TEXT
+    return train_dl, val_dl, test_dl, TEXT1, TEXT2, TEST_TEXT, dataloaders_dict
 
 
 if __name__ == '__main__':
