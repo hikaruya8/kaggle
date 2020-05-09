@@ -5,7 +5,7 @@ import random
 import torch
 from torchtext.vocab import Vectors
 import tensorflow as tf
-from transformers import *
+from transformers import BertTokenizer
 import pdb
 
 
@@ -40,16 +40,16 @@ def tokenizer_with_preprocessing(text, tokenizer=bert_tokenizer.tokenize):
     return ret
 
 
-def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
+def get_tweets_and_sentiment_label_loaders(max_length=128, batch_size=64):
     #  データを読み込む際の読み込んだ内容に対して行う処理を定義
     max_length = max_length
     batch_size = batch_size
     pad_index = bert_tokenizer.convert_tokens_to_ids(bert_tokenizer.pad_token)
     ID = torchtext.data.Field(sequential=False, use_vocab=False)
-    TEXT1 = torchtext.data.Field(use_vocab=False, tokenize=bert_tokenizer.encode, pad_token=pad_index) # raw text
-    TEXT2 = torchtext.data.Field(use_vocab=False, tokenize=bert_tokenizer.encode, pad_token=pad_index) # selected_text
+    TEXT1 = torchtext.data.Field(sequential=True, use_vocab=False, tokenize=bert_tokenizer.encode, pad_token=pad_index, include_lengths=True, batch_first=True, fix_length=max_length, unk_token="<UNK>") # raw text
+    TEXT2 = torchtext.data.Field(sequential=True, use_vocab=False, tokenize=bert_tokenizer.encode, pad_token=pad_index, include_lengths=True, batch_first=True, fix_length=max_length,unk_token="<UNK>") # selected_text
     LABEL = torchtext.data.Field(sequential=False, use_vocab=False, preprocessing=lambda l: 0 if l == 'neutral' else 1 if l == 'positive' else 2, is_target=True) # sentiment label
-    TEST_TEXT = torchtext.data.Field(use_vocab=False, tokenize=bert_tokenizer.encode, pad_token=pad_index) # raw_text
+    TEST_TEXT = torchtext.data.Field(sequential=True, use_vocab=False, tokenize=bert_tokenizer.encode, pad_token=pad_index, include_lengths=True, batch_first=True, fix_length=max_length,unk_token="<UNK>") # raw_text
     TEST_LABEL = torchtext.data.Field(sequential=False, use_vocab=False, preprocessing=lambda l: 0 if l == 'neutral' else 1 if l == 'positive' else 2, is_target=True) # sentiment label
 
   # TEST_TEXT = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=False, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>",pad_token=pad_index, unk_token="<unk>")
@@ -102,11 +102,20 @@ def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
     dataloaders_dict = {"train": train_dl, "val": val_dl}
 
     # pdb.set_trace()
-    # # test
-    # batch = next(iter(train_dl))
-    # print(batch.Text1)
-    # print(batch.Text2)
-    # print(batch.Label)
+    # batchの確認
+    batch = next(iter(train_dl))
+    print(batch.Text1)
+    print(batch.Text2)
+    print(batch.Label)
+
+    # ミニバッチの1文目を確認してみる
+    text_minibatch_1 = (batch.Text1[0][1]).numpy()
+
+    # IDを単語に戻す
+    text = bert_tokenizer.decode(text_minibatch_1)
+
+    print(text)
+
 
     return train_dl, val_dl, test_dl, TEXT1, TEXT2, TEST_TEXT, dataloaders_dict
 
