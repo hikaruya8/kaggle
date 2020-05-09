@@ -9,18 +9,6 @@ from transformers import *
 import pdb
 
 
-def preprocessing_text(text):
-    for p in string.punctuation:
-        if (p == ".") or (p == ","):
-            continue
-        else:
-            text = text.replace(p, " ")
-
-        text = text.replace(".", " . ")
-        text = text.replace(",", " , ")
-
-        return text
-
 # make vocab with pre-trained BERT model
 # load pre-trained tokenizer
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
@@ -34,6 +22,22 @@ bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 # outputs = model(input_ids)
 # last_hidden_states = outputs[0]  # The last hidden-state is the first element of the output tuple
 
+def preprocessing_text(text):
+    for p in string.punctuation:
+        if (p == ".") or (p == ","):
+            continue
+        else:
+            text = text.replace(p, " ")
+
+        text = text.replace(".", " . ")
+        text = text.replace(",", " , ")
+
+        return text
+
+def tokenizer_with_preprocessing(text, tokenizer=bert_tokenizer.tokenize):
+    text = preprocessing(text)
+    ret = tokenizer(text)
+    return ret
 
 
 def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
@@ -41,10 +45,10 @@ def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
     max_length = max_length
     batch_size = batch_size
     ID = torchtext.data.Field(sequential=False, use_vocab=False)
-    TEXT1 = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=False, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>") # raw text
-    TEXT2 = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=False, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>") # selected_text
+    TEXT1 = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=False, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>", pad_token="<pad>", unk_token="<unk>") # raw text
+    TEXT2 = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=False, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>",pad_token="<pad>", unk_token="<unk>") # selected_text
     LABEL = torchtext.data.Field(sequential=False, use_vocab=False, preprocessing=lambda l: 0 if l == 'neutral' else 1 if l == 'positive' else 2, is_target=True) # sentiment label
-    TEST_TEXT = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=False, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>") # raw_text
+    TEST_TEXT = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=False, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>",pad_token="<pad>", unk_token="<unk>") # raw_text
     TEST_LABEL = torchtext.data.Field(sequential=False, use_vocab=False, preprocessing=lambda l: 0 if l == 'neutral' else 1 if l == 'positive' else 2, is_target=True) # sentiment label
 
     train_val_ds = torchtext.data.TabularDataset(
