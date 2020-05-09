@@ -41,10 +41,10 @@ def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
     max_length = max_length
     batch_size = batch_size
     ID = torchtext.data.Field(sequential=False, use_vocab=False)
-    TEXT1 = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=True, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>") # raw text
-    TEXT2 = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=True, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>") # selected_text
+    TEXT1 = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=False, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>") # raw text
+    TEXT2 = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=False, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>") # selected_text
     LABEL = torchtext.data.Field(sequential=False, use_vocab=False, preprocessing=lambda l: 0 if l == 'neutral' else 1 if l == 'positive' else 2, is_target=True) # sentiment label
-    TEST_TEXT = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=True, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>") # raw_text
+    TEST_TEXT = torchtext.data.Field(sequential=True, tokenize=bert_tokenizer.encode, use_vocab=False, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>") # raw_text
     TEST_LABEL = torchtext.data.Field(sequential=False, use_vocab=False, preprocessing=lambda l: 0 if l == 'neutral' else 1 if l == 'positive' else 2, is_target=True) # sentiment label
 
     train_val_ds = torchtext.data.TabularDataset(
@@ -62,7 +62,7 @@ def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
     print('１つ目の訓練&検証データ:{}'.format(vars(train_val_ds[0])))
     print('テストのデータ数: {}'.format(len(test_ds)))
     print('１つ目のテストデータ:{}'.format(vars(test_ds[0])))
-    print('TEXT1のids tensor: {}'.format(vars(torch.IntTensor(train_val_ds[0].Text1))))
+    # print('TEXT1のids tensor: {}'.format(vars(torch.IntTensor(train_val_ds[0].Text1))))
 
     train_ds, val_ds = train_val_ds.split(split_ratio=0.8, random_state=random.seed(1234))
     # # test split data
@@ -73,7 +73,7 @@ def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
     # test vectors
     # print(fasttext_vectors.dim)
     # print(len(fasttext_vectors.itos))
-    pdb.set_trace()
+    # pdb.set_trace()
     #  ベクトル化したボキャブラリーを作成
     # TEXT1.build_vocab(train_ds, vectors=fasttext_vectors, min_freq=10)
     # TEXT2.build_vocab(train_ds, vectors=fasttext_vectors, min_freq=10)
@@ -90,13 +90,14 @@ def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
     # make Dataloader
     train_dl = torchtext.data.Iterator(train_ds, batch_size=24, train=True)
     val_dl = torchtext.data.Iterator(val_ds, batch_size=24, train=False, sort=False)
-    test_dl = torchtext.data.Iterator(test_ds, batch_size=24, sort=False)
+    test_dl = torchtext.data.Iterator(test_ds, batch_size=24, train=False, sort=False)
 
-    # test
-    batch = next(iter(train_dl))
-    print(batch.Text1)
-    print(batch.Text2)
-    print(batch.Label)
+    # pdb.set_trace()
+    # # test
+    # batch = next(iter(train_dl))
+    # print(batch.Text1)
+    # print(batch.Text2)
+    # print(batch.Label)
 
     return train_dl, val_dl, test_dl, TEXT1, TEXT2, TEST_TEXT
 
