@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 from torch import optim
 from argparse import ArgumentParser
+from visdom import Visdom
 
 parser = ArgumentParser()
 parser.add_argument('-n', '--num_epochs', default=10, type=int)
@@ -167,7 +168,7 @@ def eval(saved_model_path):
 if __name__ == '__main__':
     save_model_path = '../model/transformer.pth' # modelの保存場所
     train(save_model_path)
-    # eval(save_model_path)
+    eval(save_model_path)
 
 
 

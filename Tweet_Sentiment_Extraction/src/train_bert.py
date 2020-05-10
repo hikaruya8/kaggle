@@ -138,3 +138,37 @@ def train_model(model, dataloaders_dict, criterion, optimizer, num_epochs):
 if __name__ == '__main__':
     num_epochs = 2
     model_trained = train_model(model, dataloaders_dict, criterion, optimizer, num_epochs=num_epochs)
+    # 学習したモデルパラメータを保存
+    save_path = '../model/bert_fine_tuning_TweetSentiment.pth'
+    torch.save(model_trained.state_dict(), save_path)
+
+    # テストデータでの正解率を求める
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    model_trained.eval()   # モデルを検証モードに
+    model_trained.to(device)  # GPUが使えるならGPUへ送る
+
+    # epochの正解数を記録する変数
+    epoch_corrects = 0
+
+    for batch in tqdm(test_dl):  # testデータのDataLoader
+        # batchはTextとLableの辞書オブジェクト
+        # GPUが使えるならGPUにデータを送る
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        inputs = batch.Test_Text[0].to(device)  # 文章
+        labels = batch.Test_Label.to(device)  # ラベル
+
+        # 順伝搬（forward）計算
+        with torch.set_grad_enabled(False):
+
+            # BertForIMDbに入力
+            outputs = model_trained(inputs, token_type_ids=None, attention_mask=None)
+
+            loss = criterion(outputs, labels)  # 損失を計算
+            _, preds = torch.max(outputs, 1)  # ラベルを予測
+            epoch_corrects += torch.sum(preds == labels.data)  # 正解数の合計を更新
+
+    # 正解率
+    epoch_acc = epoch_corrects.double() / len(test_dl.dataset)
+
+    print('テストデータ{}個での正解率：{:.4f}'.format(len(test_dl.dataset), epoch_acc))
