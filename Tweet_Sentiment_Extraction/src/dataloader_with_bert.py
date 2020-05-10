@@ -40,7 +40,7 @@ def tokenizer_with_preprocessing(text, tokenizer=bert_tokenizer.tokenize):
     return ret
 
 
-def get_tweets_and_sentiment_label_loaders(max_length=128, batch_size=64):
+def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
     #  データを読み込む際の読み込んだ内容に対して行う処理を定義
     max_length = max_length
     batch_size = batch_size
@@ -109,7 +109,7 @@ def get_tweets_and_sentiment_label_loaders(max_length=128, batch_size=64):
     print(batch.Label)
 
     # ミニバッチの1文目を確認してみる
-    text_minibatch_1 = (batch.Text1[0][1]).numpy()
+    text_minibatch_1 = (batch.Text1[0][5]).numpy()
 
     # IDを単語に戻す
     text = bert_tokenizer.decode(text_minibatch_1)

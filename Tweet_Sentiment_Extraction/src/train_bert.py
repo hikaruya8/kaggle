@@ -7,12 +7,13 @@ import time
 import pdb
 from dataloader_with_bert import get_tweets_and_sentiment_label_loaders
 from bert_model import BertForTweetSentimentClassification
+import logging
+logging.basicConfig(level=logging.INFO)
 
 train_dl, val_dl, test_dl, TEXT1, TEXT2, TEST_TEXT, dataloaders_dict = get_tweets_and_sentiment_label_loaders()
 
 pre_trained_bert_model = BertModel.from_pretrained('bert-base-uncased')
 model = BertForTweetSentimentClassification(pre_trained_bert_model)
-model.train()
 
 
 '''BERT のファインチューニングのための設定'''
@@ -93,9 +94,9 @@ def train_model(model, dataloaders_dict, criterion, optimizer, num_epochs):
 
                 # 順伝搬（forward）計算
                 with torch.set_grad_enabled(phase == 'train'):
-                    pdb.set_trace()
+                    # pdb.set_trace()
                     # BertForTweetSentimentClassificationに入力
-                    outputs = model(inputs, token_type_ids=None, attention_mask=None, output_all_encoded_layers=False, attention_show_flg=False)
+                    outputs = model(inputs, token_type_ids=None)
 
                     loss = criterion(outputs, labels)  # 損失を計算
 
