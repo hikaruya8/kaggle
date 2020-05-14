@@ -7,8 +7,18 @@ import time
 import pdb
 from dataloader_with_bert import get_tweets_and_sentiment_label_loaders
 from bert_model import BertForTweetSentimentClassification
+from argparse import ArgumentParser
 import logging
 logging.basicConfig(level=logging.INFO)
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+parser = ArgumentParser()
+# parser.add_argument('-n', '--num_epochs', default=10, type=int)
+parser.add_argument('-d','--device_ids', nargs='+', help='<Required> Set flag', required=True, default=0, type=int)
+# Use like:from argparse import ArgumentPafrom argparse import ArgumentParserrser
+args = parser.parse_args()
+print(args)
 
 train_dl, val_dl, test_dl, TEXT1, TEXT2, TEST_TEXT, dataloaders_dict = get_tweets_and_sentiment_label_loaders()
 
@@ -51,9 +61,13 @@ criterion = nn.CrossEntropyLoss()
 def train_model(model, dataloaders_dict, criterion, optimizer, num_epochs):
 
     # GPUが使えるかを確認
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("使用デバイス：", device)
     print('-----start-------')
+
+    if device == 'cuda':
+        model = torch.nn.DataParallel(model, device_ids=args.device_ids) # use multi-GPU
+        torch.cudnn.benchmark =True
 
     # ネットワークをGPUへ
     model.to(device)

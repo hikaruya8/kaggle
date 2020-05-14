@@ -5,11 +5,11 @@ import torch.nn as nn
 from torch import optim
 from argparse import ArgumentParser
 from visdom import Visdom
+import pdb
 
 parser = ArgumentParser()
 parser.add_argument('-n', '--num_epochs', default=10, type=int)
-parser.add_argument('-d','--device_ids', nargs='+', help='<Required> Set flag', required=True, default=0)
-# Use like:
+# parser.add_argument('-d','--device_ids', nargs='+', help='<Required> Set flag', required=True, default=0)
 args = parser.parse_args()
 print(args)
 
@@ -25,14 +25,15 @@ def weights_init(m):
 
 def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
     # use GPU if it is available
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    pdb.set_trace()
 
     print("使用デバイス:{}".format(device))
     print('---------------start---------------')
     net.to(device)
-    if device == 'cuda':
-        net = torch.nn.DataParallel(net, device_ids=args.device_ids) # use multi-GPU
-        torch.cudnn.benchmark =True
+    # if device == 'cuda':
+    #     net = torch.nn.DataParallel(net, device_ids=device_ids) # use multi-GPU
+    #     torch.cudnn.benchmark =True
 
     # ネットワークがある程度固定できれば高速化させる
     torch.backends.cudnn.benchmark = True

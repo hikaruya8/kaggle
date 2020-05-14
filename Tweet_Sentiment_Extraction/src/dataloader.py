@@ -87,10 +87,10 @@ def get_tweets_and_sentiment_label_loaders(max_length=256, batch_size=64):
     test_dl = torchtext.data.Iterator(test_ds, batch_size=24, sort=False)
 
     # test
-    # batch = next(iter(train_dl))
-    # print(batch.Text1)
-    # print(batch.Text2)
-    # print(batch.Label)
+    batch = next(iter(train_dl))
+    print(batch.Text1)
+    print(batch.Text2)
+    print(batch.Label)
 
     return train_dl, val_dl, test_dl, TEXT1, TEXT2, TEST_TEXT
 
